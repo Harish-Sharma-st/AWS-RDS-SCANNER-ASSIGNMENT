@@ -1,1 +1,51 @@
 # AWS-RDS-SCANNER-ASSIGNMENT
+#Assingement AWS-RDS-SCANNER: Setup and Commands 
+
+1. Launch a t2.medium or t3.medium EC2 instance(AWS Linux 2).
+
+2 Installed Python and Boto3:
+
+sudo yum update -y # install system dependancy
+sudo yum install -y gcc openssl-devel bzip2-devel libffi-devel make
+cd /usr/src
+sudo curl -O https://www.python.org/ftp/python/3.12.0/Python-3.12.0.tgz
+sudo tar xzf Python-3.12.0.tgz
+cd Python-3.12.0
+sudo ./configure --enable-optimizations
+sudo make altinstall
+python3.12 --version
+python3.12 -m ensurepip
+python3.12 -m pip install boto3
+
+
+3. install docker 
+sudo yum install -y docker 
+sudo service docker start
+
+3. install Kubectl :
+curl -LO https://dl.k8s.io/release/v1.29.2/bin/linux/amd64/kubectl
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+
+4. Install minukube:
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+5. install Helm:
+
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+main Commands:
+1. docker build -t rds-scanner .
+2. minikube start --driver=docker --cpus=2 --memory=2200mb
+
+3.#Create Kubernetes secrets and use it in the Deployment.yaml file in conatainer spec.
+ kubectl create secret generic aws-credentials \
+  --from-literal=AWS_ACCESS_KEY_ID=YOUR_KEY \
+  --from-literal=AWS_SECRET_ACCESS_KEY=YOUR_SECRET \
+  --from-literal=AWS_DEFAULT_REGION=us-east-1
+  
+4.helm install rds-scanner ./rds-scanner
+5. kubectl get pods
+6. kubectl exec -it <pod-name> -c rds-scanner -- sh
+7. python /rds_scanner.py us-east-1
